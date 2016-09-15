@@ -130,6 +130,7 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
                     'displayFooterBefore',
                     'actionCustomerAccountAdd',
                     'additionalCustomerFormFields',
+                    'validateCustomerFormFields',
                 )
             )
         ) {
@@ -791,10 +792,35 @@ class Ps_Emailsubscription extends Module implements WidgetInterface
             'Modules.EmailSubscription.Shop'
         );
 
-        return (new FormField())
+        return array((new FormField())
                 ->setName('newsletter')
                 ->setType('checkbox')
-                ->setLabel($label);
+                ->setLabel($label),
+            (new FormField())
+                ->setName('newsletter2')
+                ->setType('checkbox')
+                ->setLabel($label), );
+    }
+    
+    /**
+     * Receive previously FormField(s) sent, in order to validate them.
+     * Call their function setErrors() if their value is invalid for you.
+     * Do not forget to return the FormFields in you want the core to
+     * handle them.
+     * 
+     * In this example, we add an error if the checkbox is not checked.
+     * 
+     * @param array $params
+     * @return array
+     */
+    public function hookValidateCustomerFormFields($params)
+    {
+        foreach ($params['fields'] as $field) {
+            if (!$field->getValue()) {
+                $field->setErrors(array('Woot ! Y U NO CHECK IT ?'));
+            }
+        }
+        return $params['fields'];
     }
 
     public function renderForm()
